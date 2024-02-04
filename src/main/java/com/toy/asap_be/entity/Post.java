@@ -28,19 +28,18 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false) // , columnDefinition = "LONGTEXT"
-    private String content;
+    @Column(nullable = false)
+    private String description; // content 필드를 description으로 변경
 
     @Column(nullable = false)
     private int price;
 
     @Column(nullable = false)
-    private String goodsImg;
+    private String goodsImg; // 이미지 경로를 저장할 수 있는 필드 추가
 
     @Column(nullable = false)
     private Boolean negoCheck;
 
-    @JsonIgnoreProperties({"post"})
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "post")
     private List<PostLike> likeList;
 
@@ -56,13 +55,11 @@ public class Post extends Timestamped {
 
     public void update(PostRequestDto postRequestDto, Category category) {
         this.title = postRequestDto.getTitle();
-        this.content = postRequestDto.getContent();
+        this.description = postRequestDto.getDescription();
         this.price = postRequestDto.getPrice();
         this.goodsImg = postRequestDto.getGoodsImg();
         this.negoCheck = postRequestDto.getNegoCheck();
         this.category = category;
-
-
     }
 
     @PrePersist
