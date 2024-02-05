@@ -18,6 +18,7 @@ public class PostDetailDto {
     private String title;
     private String content;
     private int price;
+    private String Description;
     private String goodsImg;
     private Boolean negoCheck;
     private Boolean likeCheck;

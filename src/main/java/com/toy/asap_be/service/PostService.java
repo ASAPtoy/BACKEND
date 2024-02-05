@@ -1,4 +1,5 @@
 package com.toy.asap_be.service;
+
 import com.toy.asap_be.dto.PostDetailDto;
 import com.toy.asap_be.dto.PostInsideDto;
 import com.toy.asap_be.dto.PostRequestDto;
@@ -6,7 +7,6 @@ import com.toy.asap_be.dto.PostResponseDto;
 import com.toy.asap_be.entity.Category;
 import com.toy.asap_be.entity.Post;
 import com.toy.asap_be.entity.User;
-import com.toy.asap_be.repository.CategoryRepository;
 import com.toy.asap_be.repository.PostLikeRepository;
 import com.toy.asap_be.repository.PostRepository;
 import com.toy.asap_be.security.UserDetailsImpl;
@@ -14,7 +14,6 @@ import com.toy.asap_be.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,45 +25,32 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-    private final CategoryRepository categoryRepository;
-
 
     @Transactional
     public PostResponseDto createPost(PostRequestDto postRequestDto, User user) {
-
-        String categoryName = postRequestDto.getCategoryName();
-        Category category= categoryRepository.findByCategoryName(categoryName).orElseThrow(
-                () -> new NullPointerException("해당 카테고리명이 존재하지 않습니다.")
-        );
-
         Post post = Post.builder()
                 .user(user)
-                .goodsImg(postRequestDto.getGoodsImg())
                 .title(postRequestDto.getTitle())
-                .content(postRequestDto.getContent())
-                .negoCheck(postRequestDto.getNegoCheck())
-                .category(category)
+                .description(postRequestDto.getDescription())
                 .price(postRequestDto.getPrice())
+                .goodsImg(postRequestDto.getGoodsImg())
+                .negoCheck(postRequestDto.getNegoCheck())
                 .build();
 
         postRepository.save(post);
 
         return PostResponseDto.builder()
-
                 .nickname(user.getNickname())
-                .username(user.getUsername())
-                .title(postRequestDto.getTitle())
-                .content(postRequestDto.getContent())
-                .categoryName(category.getCategoryName())
-                .goodsImg(postRequestDto.getGoodsImg())
+                .Title(postRequestDto.getTitle())
+                .Description(postRequestDto.getDescription())
                 .price(postRequestDto.getPrice())
+                .goodsImg(postRequestDto.getGoodsImg())
                 .negoCheck(postRequestDto.getNegoCheck())
                 .build();
     }
 
-    @Transactional      //리스트로 보내기
+    @Transactional
     public PostDetailDto showDetail(Long postId, User user) {
-
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new NullPointerException("해당 게시글 정보가 존재하지 않습니다.")
         );
@@ -96,8 +82,7 @@ public class PostService {
                 .nickname(postMain.getUser().getNickname())
                 .username(postMain.getUser().getUsername())
                 .title(post.getTitle())
-                .content(post.getContent())
-                .categoryName(post.getCategory().getCategoryName())
+                .Description(post.getDescription())
                 .goodsImg(post.getGoodsImg())
                 .price(post.getPrice())
                 .negoCheck(post.getNegoCheck())
@@ -115,10 +100,7 @@ public class PostService {
                 () -> new NullPointerException("해당 게시글이 존재하지 않습니다.")
         );
 
-        Category category= categoryRepository.findByCategoryName(postRequestDto.getCategoryName()).orElseThrow(
-                () -> new NullPointerException("해당 카테고리명이 존재하지 않습니다.")
-        );
-        post.update(postRequestDto, category);
+        post.update(postRequestDto);
     }
 
     @Transactional
@@ -133,16 +115,5 @@ public class PostService {
             throw new IllegalArgumentException("당신의 게시글이 아닙니다.");
         }
         postRepository.deleteById(postId);
-    }
-
-    @Transactional
-    public List<String> setCategory(){
-
-        List<String> categoryList = new ArrayList<>();
-        List<Category> categories = categoryRepository.findAll();
-        for (Category category :categories) {
-            categoryList.add(category.getCategoryName());
-        }
-        return categoryList;
     }
 }

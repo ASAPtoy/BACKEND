@@ -60,11 +60,18 @@ public class Post extends Timestamped {
         this.goodsImg = postRequestDto.getGoodsImg();
         this.negoCheck = postRequestDto.getNegoCheck();
         this.category = category;
+        this.setTitle(postRequestDto.getTitle());
+        this.setDescription(postRequestDto.getDescription());
+        this.setPrice(postRequestDto.getPrice());
+        this.setGoodsImg(postRequestDto.getGoodsImg());
+        this.setNegoCheck(postRequestDto.getNegoCheck());
     }
 
     @PrePersist
     public void prePersist() {
         this.visitCount = this.visitCount == null ? 1 : this.visitCount;
     }
+
+
 
 }
